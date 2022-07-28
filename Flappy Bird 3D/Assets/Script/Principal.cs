@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Principal : MonoBehaviour {
 
@@ -10,7 +11,11 @@ public class Principal : MonoBehaviour {
 	public GameObject pedra;
 	public GameObject canos;
 	public GameObject jogadorFelpudo;
-	public Text meuScore;
+	public Text scoreText;
+	public Text startText;
+	public Text highScoreText; 
+	public GameObject objectCanvasScore;
+	public GameObject objectCanvasHighscore;
 	public GameObject particulasPeninhas;
 
 	public AudioClip somVoa;
@@ -19,27 +24,44 @@ public class Principal : MonoBehaviour {
 
 	bool comecou;
 	bool acabou;
-	int score;
-    
+	private int score, highscore;
+	private string sceneName;
 
 	void Start () { 
 		Physics.gravity = new Vector3(0, -20.0F, 0); // aumenta a  gravidade da cena
-        meuScore.text = "Toque para iniciar";
-    }
+
+		scoreText.text = "0";
+		objectCanvasScore.transform.position = new Vector2(Screen.width / 6 - 46, Screen.height - 100);
+		objectCanvasHighscore.transform.position = new Vector2(Screen.width / 6 - 46, Screen.height - 50);
+
+		//Colocando o highscore para ser salvo
+		sceneName = SceneManager.GetActiveScene().name;
+		if (PlayerPrefs.HasKey(sceneName + "score"))
+		{
+			highscore = PlayerPrefs.GetInt(sceneName + "score");
+			highScoreText.text = highscore.ToString();
+		}
+
+		startText.enabled = true;
+		startText.transform.position = new Vector2(Screen.width / 2, Screen.height / 2);
+		startText.text = "Toque para iniciar!";
+		startText.fontSize = 45;
+	}
 
 	void Update(){
-		if(Input.anyKeyDown) // se pertar 
+		if(Input.anyKeyDown) // se apertar 
 		{ 
 			if(!acabou) // se ainda nao terminou
 			{
 				if(!comecou) // se ainda nao começou
-				{ 
+				{
+					startText.enabled = false;
 					comecou = true;
 					InvokeRepeating("CriaCerca", 1, 0.15f); // repete a criaçao da cerca,espera 1s e 1decimo de s cria
 					InvokeRepeating("CriaObjeto", 1, 0.75f); 
 					jogadorFelpudo.GetComponent<Rigidbody>().useGravity = true;
-					jogadorFelpudo.GetComponent<Rigidbody>().isKinematic = false; 
-					meuScore.text = score.ToString();
+					jogadorFelpudo.GetComponent<Rigidbody>().isKinematic = false;
+					scoreText.text = score.ToString();
 					//meuScore.fontSize = 100;
 				}
 				VoaFelpudo(); 
@@ -117,7 +139,14 @@ public class Principal : MonoBehaviour {
 	void MarcaPonto(){
 		GetComponent<AudioSource>().PlayOneShot(somScore);
 		score++;
-		meuScore.text = score.ToString();
+		scoreText.text = score.ToString();
+
+		if (score > highscore)
+		{
+			highscore = score;
+			highScoreText.text = highscore.ToString();
+			PlayerPrefs.SetInt(sceneName + "score", highscore);
+		}
 	}
 	 
 	void FimDeJogo(){ 
