@@ -13,6 +13,7 @@ public class Principal : MonoBehaviour {
 	public GameObject jogadorFelpudo;
 	public Text scoreText;
 	public Text startText;
+	public Text startTextJP;
 	public Text highScoreText; 
 	public GameObject objectCanvasScore;
 	public GameObject objectCanvasHighscore;
@@ -44,9 +45,15 @@ public class Principal : MonoBehaviour {
 
 		startText.enabled = true;
 		startText.transform.position = new Vector2(Screen.width / 2, Screen.height / 2);
-		startText.text = "Toque para iniciar!";
+		startText.text = "Toque para iniciar!\nTap to start!";
 		startText.fontSize = 45;
+
+		startTextJP.enabled = true;
+		startTextJP.transform.position = new Vector2(Screen.width / 2, Screen.height / 2);
+		startTextJP.text = "\n\nタップしてスタート！";
+		startTextJP.fontSize = 45;
 	}
+	
 
 	void Update(){
 		if(Input.anyKeyDown) // se apertar 
@@ -56,6 +63,7 @@ public class Principal : MonoBehaviour {
 				if(!comecou) // se ainda nao começou
 				{
 					startText.enabled = false;
+					startTextJP.enabled = false;
 					comecou = true;
 					InvokeRepeating("CriaCerca", 1, 0.15f); // repete a criaçao da cerca,espera 1s e 1decimo de s cria
 					InvokeRepeating("CriaObjeto", 1, 0.75f); 
